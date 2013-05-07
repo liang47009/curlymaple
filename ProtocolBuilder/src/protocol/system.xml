@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<protocol module="system">
+		<responseMessage id="1" name="sysmsg" desc="系统通知">
+			<param name="type" type="int" desc="1系统公告 ,2玩家公告" />
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="system">
+		<responseMessage id="2" name="show" desc="玩家消息">
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="system">
+		<responseMessage id="3" name="alert" desc="弹窗">
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="system">
+		<responseMessage id="4" name="warning" desc="玩家警告">
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="system">
+		<responseMessage id="5" name="notice" desc="系统公告">
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="system">
+		<requestMessage id="6" name="test" desc="系统公告">
+			<param name="message" type="string" desc="内容" />
+		</requestMessage>
+
+		<responseMessage id="7" name="test" desc="系统公告">
+			<param name="message" type="string" desc="内容" />
+		</responseMessage>
+	</protocol>
+
+</root>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<protocol module="user">
+		<requestMessage id="100" name="login" desc="用户登陆">
+			<param name="id" type="int" desc="用户id" />
+		</requestMessage>
+
+		<responseMessage id="101" name="login" desc="用户登陆">
+			<param name="result" type="int" desc="1成功, 0失败" />
+		</responseMessage>
+	</protocol>
+</root>
