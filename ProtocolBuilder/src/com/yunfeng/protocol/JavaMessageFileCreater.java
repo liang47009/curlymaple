@@ -105,12 +105,13 @@ public class JavaMessageFileCreater {
 			// }
 			// createC2SConstructMethod(requestMessageClass,
 			// requestMessage.getParamList());
-			requestMessageClass.createGetterSetter();
+			requestMessageClass.createGetterSetter("Resource");
 			Method method = new Method(null, Method.PUBLIC_LIMIT, "execute",
 					"void", "");
 			ArrayList<Param> members = requestMessage.getParamList();
 			String className = requestMessageClass.getName();
-			String methodName = ConstantUtil.getInstance().getStringHeadDown(className.substring(0, className.indexOf("_")));
+			String methodName = ConstantUtil.getInstance().getStringHeadDown(
+					className.substring(0, className.indexOf("_")));
 			serviceName = serviceName + "." + methodName;
 			createAreaMember(method, members, serviceName);
 			requestMessageClass.addMethod(method);
@@ -162,15 +163,16 @@ public class JavaMessageFileCreater {
 				file = new JavaFile(name, packageName,
 						config.getJavaProjectPath());
 			}
-			file.addImport("java.util.*");
-			file.addImport("com.yunfeng.game.core.*");
+			file.addImport("java.util.List");
+			file.addImport("com.yunfeng.game.core.IS2CCommand");
 			file.addImport("org.jboss.netty.buffer.*");
 			file.addImport("com.yunfeng.protocol.netty.*");
 			file.addImport("org.jboss.netty.channel.Channel");
+			file.addImport("org.springframework.stereotype.Controller");
 			file.write();
 
 			Class responseMessageClass = new Class(name, Class.PUBLIC_LIMIT);
-
+			responseMessageClass.setAnnotation("Controller");
 			responseMessageClass.addInterface("IS2CCommand");
 
 			MemberValue messageIdMember = new MemberValue(
@@ -187,7 +189,7 @@ public class JavaMessageFileCreater {
 			}
 
 			// 加入单例
-			responseMessageClass.createSingleton(true);
+			// responseMessageClass.createSingleton(true);
 
 			createSendMethod(responseMessageClass,
 					responseMessage.getParamList(),
@@ -236,16 +238,21 @@ public class JavaMessageFileCreater {
 						config.getJavaProjectPath());
 			}
 
+			file.addImport("com.yunfeng.game.core.IS2CCommand");
+			file.addImport("com.yunfeng.protocol.netty.*");
+			file.addImport("org.jboss.netty.channel.Channel");
+			file.addImport("org.springframework.stereotype.Controller");
 			file.addImport("org.jboss.netty.buffer.ChannelBuffer");
-			file.addImport("com.yunfeng.game.core.*");
+			file.addImport("com.yunfeng.protocol.util.CompactByteArray");
 			file.addImport("java.util.*");
 			file.write();
 			Class structClass = new Class(name, Class.PUBLIC_LIMIT);
+			structClass.setAnnotation("Controller");
 			structClass.addInterface("ISendable");
 			createStructConstructMethod(structClass, struct.getParamList());
 			createConstructMethod(structClass, struct.getParamList());
 			addStructParamToClass(structClass, struct);
-			structClass.createGetterSetter();
+			structClass.createGetterSetter(null);
 			structClass.setClassPath(packageName + "." + name);
 			addStructSendMethod(structClass, struct.getByteInt());
 
@@ -278,22 +285,25 @@ public class JavaMessageFileCreater {
 	 * 
 	 * @param method
 	 * @param members
-	 * @param serviceName 服务的方法名
+	 * @param serviceName
+	 *            服务的方法名
 	 */
-	private void createAreaMember(Method method, ArrayList<Param> members, String serviceName) {
+	private void createAreaMember(Method method, ArrayList<Param> members,
+			String serviceName) {
 		ArrayList<MethodParam> paramList = new ArrayList<MethodParam>();
 		paramList.add(new MethodParam("ChannelBuffer", "channelBuffer"));
 		paramList.add(new MethodParam("MemoryData", "memoryData"));
 		method.setParamList(paramList);
 
+		StringBuffer sb = new StringBuffer();
+		StringBuffer temp = new StringBuffer();
+		temp.append(serviceName);
+		temp.append("(memoryData");
 		if (members != null) {
-			StringBuffer sb = new StringBuffer();
-			StringBuffer temp = new StringBuffer();
 			boolean hasSize = false;
-			temp.append(serviceName);
-			temp.append("(memoryData, ");
 			Iterator<Param> it = members.iterator();
-			for (;it.hasNext();) {
+			temp.append(", ");
+			for (; it.hasNext();) {
 				Param param = it.next();
 				String type = param.getType();
 				if (type.equals("list")) {
@@ -334,10 +344,10 @@ public class JavaMessageFileCreater {
 				}
 				temp.append(param.getName());
 			}
-			temp.append(");");
-			sb.append(temp);
-			method.setContant(sb.toString());
 		}
+		temp.append(");");
+		sb.append(temp);
+		method.setContant(sb.toString());
 	}
 
 	/**
@@ -506,24 +516,29 @@ public class JavaMessageFileCreater {
 	 * @param paramList
 	 */
 	private void createConstructMethod(Class messageClass, List<Param> paramList) {
-		Method constructMethod = messageClass
+		Method constParamMethod = messageClass
 				.addConstructMethod(Method.PUBLIC_LIMIT);
 
 		StringBuffer contentString = new StringBuffer();
-		if (paramList != null) {
-			for (Param param : paramList) {
-				constructMethod.addMethodParam(new MethodParam(convertC2SType(
-						param.getType(), param.getStruct()), param.getName()));
-				contentString.append(constructMethod.contentFeed(0));
 
+		messageClass.addConstructMethod(Method.PUBLIC_LIMIT);
+
+		if (paramList != null) {
+			for (Iterator<Param> it = paramList.iterator(); it.hasNext();) {
+				Param param = it.next();
+				constParamMethod.addMethodParam(new MethodParam(convertC2SType(
+						param.getType(), param.getStruct()), param.getName()));
 				contentString.append("this.");
 				contentString.append(param.getName());
 				contentString.append(" = ");
 				contentString.append(param.getName());
 				contentString.append(";");
+				if (it.hasNext()) {
+					contentString.append(constParamMethod.contentFeed(0));
+				}
 			}
 		}
-		constructMethod.setContant(contentString.toString());
+		constParamMethod.setContant(contentString.toString());
 	}
 
 	/**
@@ -541,8 +556,8 @@ public class JavaMessageFileCreater {
 		StringBuffer contentString = new StringBuffer();
 		boolean hasSize = false;
 		if (paramList != null) {
-			for (Param param : paramList) {
-				contentString.append(constructMethod.contentFeed(0));
+			for (Iterator<Param> it = paramList.iterator(); it.hasNext();) {
+				Param param = it.next();
 				if (param.getType() == null) {
 					System.out.println("$$" + structClass.getName());
 				}
@@ -571,6 +586,9 @@ public class JavaMessageFileCreater {
 					contentString.append(ConstantUtil.getInstance()
 							.getStringHeadUp(param.getType()));
 					contentString.append("(channelBuffer);");
+				}
+				if (it.hasNext()) {
+					contentString.append(constructMethod.contentFeed(0));
 				}
 			}
 		}
@@ -657,7 +675,7 @@ public class JavaMessageFileCreater {
 				.append("channelBuffer = ChannelBuffers.copiedBuffer(channelBuffer.array(), 0, length);");
 		methodContent.append(sendMethod.contentFeed(0));
 		methodContent.append("channel.write(channelBuffer);");
-		methodContent.append(sendMethod.contentFeed(0));
+		// methodContent.append(sendMethod.contentFeed(0));
 
 		sendMethod.setContant(methodContent.toString());
 		sendSingleMethod.setContant(methodContent.toString());
@@ -671,29 +689,31 @@ public class JavaMessageFileCreater {
 		sendMethod.addMethodParam(new MethodParam("ChannelBuffer",
 				"channelBuffer"));
 
-		methodContent.append(sendMethod.contentFeed(0));
 		methodContent.append("int length=0;");
-
+		methodContent.append(sendMethod.contentFeed(0));
 		boolean byteInteB = false;
 		if (byteInt != null && byteInt.equals("true")) {
 			byteInteB = true;
 		}
 
 		String byteIntParams = "";
-
-		for (MemberValue memberValue : structClass.getMemberValueList()) {
+		Iterator<MemberValue> it = structClass.getMemberValueList().iterator();
+		for (; it.hasNext();) {
+			MemberValue memberValue = it.next();
 			String type = ConstantUtil.getInstance().getStringHeadUp(
 					memberValue.getType());
 			if (type.equals("Int") && byteInteB) {
 				byteIntParams += memberValue.getName() + ",";
 			} else {
-				methodContent.append(sendMethod.contentFeed(0));
 				methodContent.append("length += BufferWriter.write");
 				methodContent.append(ConstantUtil.getInstance()
 						.getStringHeadUp(convertType(memberValue.getType())));
 				methodContent.append("(channelBuffer,");
 				methodContent.append(memberValue.getName());
 				methodContent.append(");");
+				if (it.hasNext()) {
+					methodContent.append(sendMethod.contentFeed(0));
+				}
 			}
 		}
 
@@ -702,9 +722,8 @@ public class JavaMessageFileCreater {
 					byteIntParams.length() - 1);
 
 			methodContent.append(sendMethod.contentFeed(0));
-			methodContent
-					.append("byte[] bytes = CompactByteArray.getInstance().writeInts("
-							+ byteIntParams + ");");
+			methodContent.append("byte[] bytes = CompactByteArray.writeInts("
+					+ byteIntParams + ");");
 
 			methodContent.append(sendMethod.contentFeed(0));
 			methodContent.append("length += BufferWriter.write");

@@ -50,7 +50,8 @@ public class Method {
 	 */
 	private int indentNum;
 
-	public Method(String annotation, int limit, String name, String returnType, String contant) {
+	public Method(String annotation, int limit, String name, String returnType,
+			String contant) {
 		this.annotation = annotation;
 		this.limit = limit;
 		this.name = name;
@@ -107,7 +108,9 @@ public class Method {
 			s.append("final ");
 		}
 		s.append(returnType);
-		s.append(" ");
+		if (!"".endsWith(returnType)) {
+			s.append(" ");
+		}
 		s.append(name);
 		s.append("(");
 
@@ -116,11 +119,11 @@ public class Method {
 			s.append(" ");
 			s.append(paramList.get(i).getName());
 			if (i != paramList.size() - 1) {
-				s.append(",");
+				s.append(", ");
 			}
 		}
 
-		s.append("){\n");
+		s.append(") {\n");
 		s.append(ConstantUtil.getInstance().parseIndent(indentNum + 1));
 		s.append(contant);
 		s.append("\n");

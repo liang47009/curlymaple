@@ -102,7 +102,7 @@ public class Class {
 			s.append("implements ");
 			s.append(interfaceList.get(0));
 		}
-		s.append("{\n");
+		s.append(" {\n");
 
 		for (MemberValue memberValue : memberValueList) {
 			memberValue.write(s, indentNum + 1);
@@ -157,13 +157,14 @@ public class Class {
 	/**
 	 * 生成getter和setter方法
 	 */
-	public void createGetterSetter() {
+	public void createGetterSetter(String annotation) {
 		for (MemberValue memberValue : memberValueList) {
 			if (!memberValue.isFinalValue() && !memberValue.isStaticValue()) {
 				// 成员变量生成getter和setter方法
 				createGetter(memberValue);
-				createSetter(memberValue);
-			} else if (memberValue.isFinalValue() && !memberValue.isStaticValue()) {
+				createSetter(memberValue, annotation);
+			} else if (memberValue.isFinalValue()
+					&& !memberValue.isStaticValue()) {
 				createGetter(memberValue);
 			}
 		}
@@ -201,10 +202,10 @@ public class Class {
 		addMethod(method);
 	}
 
-	private void createSetter(MemberValue memberValue) {
+	private void createSetter(MemberValue memberValue, String annotation) {
 		String methodContent = "this." + memberValue.getName() + " = "
 				+ memberValue.getName() + ";";
-		Method method = new Method("Resource", PUBLIC_LIMIT, ConstantUtil
+		Method method = new Method(annotation, PUBLIC_LIMIT, ConstantUtil
 				.getInstance().getFieldSetterMethodName(memberValue.getName()),
 				"void", methodContent);
 		method.addMethodParam(new MethodParam(memberValue.getType(),

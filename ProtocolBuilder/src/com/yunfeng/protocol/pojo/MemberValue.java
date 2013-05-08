@@ -72,7 +72,7 @@ public class MemberValue {
 		s.append(type);
 		s.append(" ");
 		s.append(name);
-		s.append(" ");
+		// s.append(" ");
 		if (defaultValue != null) {
 			s.append(" ");
 			s.append("=");

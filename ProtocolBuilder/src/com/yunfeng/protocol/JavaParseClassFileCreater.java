@@ -93,7 +93,7 @@ public class JavaParseClassFileCreater {
 				false, "AbstractXmlApplicationContext", "axac");
 
 		protocolClass.addMemberValue(appCont);
-		protocolClass.createGetterSetter();
+		protocolClass.createGetterSetter(null);
 
 		for (RequestMessage requestMessage : requestMessageList) {
 			String reqNumberName = requestMessage.getModule() + "_"

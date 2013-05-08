@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<protocol module="role">
+		<requestMessage id="200" name="enterHall" desc="进入大厅">
+		</requestMessage>
+
+		<responseMessage id="201" name="enterHall" desc="进入大厅">
+			<param name="zones" type="list" struct="zones" desc="所有大区" />
+		</responseMessage>
+
+		<struct name="zones" byteInt="true">
+			<param name="id" type="int" /><!-- 大区id -->
+			<param name="name" type="string" /><!-- 大区名称 -->
+		</struct>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="202" name="enterZone" desc="进入大区">
+			<param name="zoneid" type="int" desc="大区的id" />
+		</requestMessage>
+
+		<responseMessage id="203" name="enterZone" desc="进入大区">
+			<param name="result" type="int" desc="1成功, 0失败" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="204" name="enterRoom" desc="进入房间">
+			<param name="roomid" type="int" desc="大区的id" />
+		</requestMessage>
+
+		<responseMessage id="205" name="enterRoom" desc="进入房间">
+			<param name="result" type="int" desc="1成功, 0失败" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="206" name="enterDesk" desc="加入桌子">
+			<param name="deskid" type="int" desc="大区的id" />
+		</requestMessage>
+
+		<responseMessage id="207" name="enterDesk" desc="加入桌子">
+			<param name="result" type="int" desc="1成功, 0失败" />
+		</responseMessage>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="208" name="quitZone" desc="退出大区">
+		</requestMessage>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="209" name="quitRoom" desc="退出房间">
+		</requestMessage>
+	</protocol>
+
+	<protocol module="role">
+		<requestMessage id="210" name="quitDesk" desc="退出桌子">
+		</requestMessage>
+	</protocol>
+
+</root>
