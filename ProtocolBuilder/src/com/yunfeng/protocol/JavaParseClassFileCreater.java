@@ -74,8 +74,8 @@ public class JavaParseClassFileCreater {
 	 */
 	private void addImport(JavaFile javaFile, List<Class> messageClassList) {
 		javaFile.addImport("java.util.*");
-		javaFile.addImport("javax.annotation.Resource");
-		javaFile.addImport("org.springframework.context.support.AbstractXmlApplicationContext");
+		// javaFile.addImport("javax.annotation.Resource");
+		javaFile.addImport("org.springframework.beans.factory.BeanFactory");
 		javaFile.addImport("org.springframework.stereotype.Controller");
 		// javaFile.addImport("com.yunfeng.game.core.MemoryData");
 		for (Class messageClass : messageClassList) {
@@ -89,11 +89,11 @@ public class JavaParseClassFileCreater {
 		protocolClass.setAnnotation("Controller");
 		// 加入单例
 		// Method constructMethod = protocolClass.createSingleton(true);
-		MemberValue appCont = new MemberValue(MemberValue.PRIVATE_LIMIT, false,
-				false, "AbstractXmlApplicationContext", "axac");
-
-		protocolClass.addMemberValue(appCont);
-		protocolClass.createGetterSetter(null);
+		// MemberValue appCont = new MemberValue(MemberValue.PRIVATE_LIMIT,
+		// false,
+		// false, "BeanFactory", "beanFactory");
+		// protocolClass.createGetterSetter(null);
+		// protocolClass.addMemberValue(appCont);
 
 		for (RequestMessage requestMessage : requestMessageList) {
 			String reqNumberName = requestMessage.getModule() + "_"
@@ -112,6 +112,7 @@ public class JavaParseClassFileCreater {
 				"new TreeMap<Short, IC2SCommand>();");
 		protocolClass.addMemberValue(messageMap);
 		Method init = new Method(null, Method.PUBLIC_LIMIT, "init", "void", "");
+		init.addMethodParam(new MethodParam("BeanFactory", "beanFactory"));
 		protocolClass.addMethod(init);
 		protocolClass.addMethod(createParseMethod(init));
 
@@ -159,7 +160,7 @@ public class JavaParseClassFileCreater {
 
 			sb.append("mm.put(");
 			sb.append(reqNumberName);
-			sb.append(", axac.getBean(");
+			sb.append(", beanFactory.getBean(");
 			sb.append(ConstantUtil.getInstance().getStringHeadUp(
 					requestMessage.getName()));
 			sb.append(".class));");
