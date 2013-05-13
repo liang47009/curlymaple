@@ -2,11 +2,11 @@
 <root>
 	<protocol module="user">
 		<requestMessage id="100" name="login" desc="用户登陆">
-			<param name="id" type="int" desc="用户id" />
+			<param name="yyid" type="int" desc="用户id" />
 		</requestMessage>
 
 		<responseMessage id="101" name="login" desc="用户登陆">
-			<param name="result" type="int" desc="1成功, 0失败" />
+			<param name="uid" type="int" desc="失败时为0, 用户id" />
 		</responseMessage>
 	</protocol>
 </root>
