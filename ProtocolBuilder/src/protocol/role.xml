@@ -5,13 +5,8 @@
 		</requestMessage>
 
 		<responseMessage id="201" name="enterHall" desc="进入大厅">
-			<param name="zones" type="list" struct="zones" desc="所有大区" />
+			<param name="result" type="int" desc="1成功, 0失败" />
 		</responseMessage>
-
-		<struct name="zones" byteInt="true">
-			<param name="id" type="int" /><!-- 大区id -->
-			<param name="name" type="string" /><!-- 大区名称 -->
-		</struct>
 	</protocol>
 
 	<protocol module="role">
