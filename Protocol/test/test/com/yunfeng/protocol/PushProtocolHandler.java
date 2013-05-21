@@ -1,10 +1,7 @@
 package test.com.yunfeng.protocol;
 
-import java.util.ArrayList;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
@@ -13,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.yunfeng.protocol.netty.BufferWriter;
-import com.yunfeng.protocol.netty.ISendable;
-import com.yunfeng.protocol.util.CompactByteArray;
 
 public class PushProtocolHandler extends SimpleChannelHandler {
 
@@ -24,8 +19,14 @@ public class PushProtocolHandler extends SimpleChannelHandler {
 	@Override
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
-		Channel channel = ctx.getChannel();
-		Test_S2C.getInstance().send(channel, "test");
+		ChannelBuffer channelBuffer = ChannelBuffers.dynamicBuffer(ctx
+				.getChannel().getConfig().getBufferFactory());
+		int length = 0;
+		length += BufferWriter.writeShort(channelBuffer, (short) 100);
+		length += BufferWriter.writeInt(channelBuffer, 12);
+		channelBuffer = ChannelBuffers.copiedBuffer(channelBuffer.array(), 0,
+				length);
+		ctx.getChannel().write(channelBuffer);
 		// Defender df = new Defender();
 		// ArrayList<ISendable> list = new ArrayList<>();
 		// list.add(df);

@@ -21,6 +21,13 @@ public class BufferReader {
 		return s;
 	}
 
+	public static byte[] readBytes(ChannelBuffer channelBuffer) {
+		short length = channelBuffer.readShort();
+		byte[] dst = new byte[length];
+		channelBuffer.readBytes(dst, 0, length);
+		return dst;
+	}
+
 	public static short readShort(ChannelBuffer channelBuffer) {
 		return channelBuffer.readShort();
 	}
