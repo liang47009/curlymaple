@@ -146,6 +146,7 @@ public class JavaMessageFileCreater {
 			String name;
 			String packageName;
 			JavaFile file;
+			// responseMessage.setByteInt("true");
 
 			if (command == BuildProtocol.TEST_MESSAGE_COMMAND) {
 				packageName = "com.yunfeng.game.message";
@@ -169,6 +170,7 @@ public class JavaMessageFileCreater {
 			file.addImport("com.yunfeng.protocol.netty.*");
 			file.addImport("org.jboss.netty.channel.Channel");
 			file.addImport("org.springframework.stereotype.Controller");
+			// file.addImport("com.yunfeng.protocol.util.CompactByteArray");
 			file.write();
 
 			Class responseMessageClass = new Class(name, Class.PUBLIC_LIMIT);
@@ -339,10 +341,10 @@ public class JavaMessageFileCreater {
 					sb.append("(channelBuffer);");
 					sb.append(param.contentFeed(0));
 				}
+				temp.append(param.getName());
 				if (it.hasNext()) {
 					temp.append(", ");
 				}
-				temp.append(param.getName());
 			}
 		}
 		temp.append(");");
@@ -658,9 +660,8 @@ public class JavaMessageFileCreater {
 					byteIntParams.length() - 1);
 
 			methodContent.append(sendMethod.contentFeed(0));
-			methodContent
-					.append("byte[] bytes = CompactByteArray.getInstance().writeInts("
-							+ byteIntParams + ");");
+			methodContent.append("byte[] bytes = CompactByteArray.writeInts("
+					+ byteIntParams + ");");
 
 			methodContent.append(sendMethod.contentFeed(0));
 			methodContent.append("length += BufferWriter.write");
